@@ -226,9 +226,9 @@ class BinaryTreeMRRTest(unittest.TestCase):
         gsl = GetterSubtreeLens(bt)
         cpls = ChildParentLinksString(bt)
         self.assertEqual('40', bt.remove(40))
-        self.assertEqual('0100 10200 203045 0350 354560 0600', ts.get())
-        self.assertEqual([[0, 0], [1, 0], [2, 2], [0, 0], [1, 1], [0, 0]], gsl.get())
-        self.assertEqual('1020 2030 30 3545 4530 6045', cpls.get())
+        self.assertEqual('0100 102030 0300 203545 04560 0600', ts.get())
+        self.assertEqual([[0, 0], [1, 1], [0, 0], [2, 2], [0, 1], [0, 0]], gsl.get())
+        self.assertEqual('1020 2035 3020 35 4535 6045', cpls.get())
 
     def test_mrr_remove13(self):
         bt = BinaryTree()

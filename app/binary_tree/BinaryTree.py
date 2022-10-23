@@ -7,8 +7,9 @@ class BinaryTree:
         self._val_searched = None
         self._val_removed = None
         self._removed_vertex_pos = 0
-        self._nearest_left_v_pos = 1
-        self._nearest_right_v_pos = 2
+        self._nearest_left_pos = 1
+        self._nearest_right_pos = 2
+        self._array_size = 3
         self._key_is_not_found = True
 
     def add(self, key, value):
@@ -61,79 +62,71 @@ class BinaryTree:
         if node.len_right_subtree > node.len_left_subtree:
             n = node.right
             if n.len_right_subtree >= n.len_left_subtree:
-                self._mlr(node)
+                self._mlr(node, node.right)
             else:
                 self._glr(node)
         else:
             n = node.left
             if n.len_left_subtree >= n.len_right_subtree:
-                self._mrr(node)
+                self._mrr(node, node.left)
             else:
                 self._grr(node)
 
-    def _mlr(self, node):  # minor left rotation
+    def _mlr(self, node, subtree):  # minor left rotation
         gparent = node.parent
-        right_subtree = node.right
-        node.right = right_subtree.left  # left subtree of right subtree becomes right subtree of node
+        node.right = subtree.left  # left subtree of right subtree becomes right subtree of node
         if node.right:
             node.len_right_subtree = max(node.right.len_left_subtree, node.right.len_right_subtree) + 1
             node.right.parent = node
         else:
             node.len_right_subtree = 0
+        self._do_link_between_gparent_subtree(gparent, node, subtree)
+        subtree.left = node  # node becomes left subtree of right subtree
+        node.parent = subtree
+        self._set_len_left_and_right_subtree(subtree)
 
-        if gparent:
-            right_subtree.parent = gparent  # right subtree becomes left child of grandparent or root
-            if node == gparent.left:
-                gparent.left = right_subtree
-            else:  # right subtree becomes right child of grandparent
-                gparent.right = right_subtree
-        else:
-            right_subtree.parent = None
-            self.root = right_subtree
-        right_subtree.left = node  # node becomes left subtree of right subtree
-        node.parent = right_subtree
-        if right_subtree.left:
-            right_subtree.len_left_subtree = max(right_subtree.left.len_right_subtree,
-                                                 right_subtree.left.len_left_subtree) + 1
-        if right_subtree.right:
-            right_subtree.len_right_subtree = max(right_subtree.right.len_right_subtree,
-                                                  right_subtree.right.len_left_subtree) + 1
-
-    def _mrr(self, node):
+    def _mrr(self, node, subtree):
         gparent = node.parent
-        left_subtree = node.left
-        node.left = left_subtree.right  # right subtree of left subtree becomes left subtree of node
+        node.left = subtree.right  # right subtree of left subtree becomes left subtree of node
         if node.left:
             node.len_left_subtree = max(node.left.len_left_subtree, node.left.len_right_subtree) + 1
             node.left.parent = node
         else:
             node.len_left_subtree = 0
-
-        if gparent:
-            left_subtree.parent = gparent  # left subtree becomes left child of grandparent or root
-            if node == gparent.left:
-                gparent.left = left_subtree
-            else:  # left subtree becomes right child of grandparent
-                gparent.right = left_subtree
-        else:
-            left_subtree.parent = None
-            self.root = left_subtree
-        left_subtree.right = node  # node becomes right subtree of left subtree
-        node.parent = left_subtree
-        if left_subtree.left:
-            left_subtree.len_left_subtree = max(left_subtree.left.len_right_subtree,
-                                                left_subtree.left.len_left_subtree) + 1
-        if left_subtree.right:
-            left_subtree.len_right_subtree = max(left_subtree.right.len_right_subtree,
-                                                 left_subtree.right.len_left_subtree) + 1
+        self._do_link_between_gparent_subtree(gparent, node, subtree)
+        subtree.right = node  # node becomes right subtree of left subtree
+        node.parent = subtree
+        self._set_len_left_and_right_subtree(subtree)
 
     def _glr(self, node):  # grand left rotation
-        self._mrr(node.right)
-        self._mlr(node)
+        self._mrr(node.right, node.right.left)
+        self._mlr(node, node.right)
 
     def _grr(self, node):
-        self._mlr(node.left)
-        self._mrr(node)
+        self._mlr(node.left, node.left.right)
+        self._mrr(node, node.left)
+
+    def _do_link_between_gparent_subtree(self, gparent, node, subtree):
+        """
+        Subtree becomes child of grandparent or root
+        """
+        if gparent:
+            subtree.parent = gparent
+            if node == gparent.left:
+                gparent.left = subtree
+            else:
+                gparent.right = subtree
+        else:
+            subtree.parent = None
+            self.root = subtree
+
+    def _set_len_left_and_right_subtree(self, subtree):
+        if subtree.left:
+            subtree.len_left_subtree = max(subtree.left.len_right_subtree,
+                                           subtree.left.len_left_subtree) + 1
+        if subtree.right:
+            subtree.len_right_subtree = max(subtree.right.len_right_subtree,
+                                            subtree.right.len_left_subtree) + 1
 
     def _get_val(self, key, node):
         if node:
@@ -175,7 +168,7 @@ class BinaryTree:
         if not node.left and not node.right:
             self._remove_leaf(node)
         else:
-            nodes = [0] * 3  # will contain removed node (0), the nearest left (1) and right (2) nodes
+            nodes = [0] * self._array_size  # will contain removed node (0), the nearest left (1) and right (2) nodes
             nodes[self._removed_vertex_pos] = node
             self._remove_vertex(nodes)
 
@@ -201,13 +194,13 @@ class BinaryTree:
         if current_node.right:
             self._find_the_last_right_node_of_the_left_subtree(nodes, current_node.right)
         else:
-            nodes[self._nearest_left_v_pos] = current_node
+            nodes[self._nearest_left_pos] = current_node
 
     def _find_the_last_left_node_of_the_right_subtree(self, nodes, current_node):
         if current_node.left:
             self._find_the_last_left_node_of_the_right_subtree(nodes, current_node.left)
         else:
-            nodes[self._nearest_right_v_pos] = current_node
+            nodes[self._nearest_right_pos] = current_node
 
     def _choose_substitution(self, nodes):
         """
@@ -217,8 +210,8 @@ class BinaryTree:
         but this is another question the further studying
         """
         rnode = nodes[self._removed_vertex_pos]
-        l = nodes[self._nearest_left_v_pos]
-        r = nodes[self._nearest_right_v_pos]
+        l = nodes[self._nearest_left_pos]
+        r = nodes[self._nearest_right_pos]
         if l and r:
             if (rnode.k - l.k) < (r.k - rnode.k):
                 subst = l
@@ -232,6 +225,12 @@ class BinaryTree:
         self._substitute(rnode, subst)
 
     def _substitute(self, removed_v, substitution):
+        self._substitute_parent(removed_v, substitution)
+        self._substitute_children(removed_v, substitution)
+        substitution.len_left_subtree = removed_v.len_left_subtree
+        substitution.len_right_subtree = removed_v.len_right_subtree
+
+    def _substitute_parent(self, removed_v, substitution):
         if removed_v.parent:
             substitution.parent = removed_v.parent
             if substitution.parent.right == removed_v:
@@ -242,6 +241,8 @@ class BinaryTree:
         else:
             self.root = substitution
             substitution.parent = None
+
+    def _substitute_children(self, removed_v, substitution):
         if removed_v.right:
             substitution.right = removed_v.right
             substitution.right.parent = substitution
@@ -250,5 +251,3 @@ class BinaryTree:
             substitution.left = removed_v.left
             substitution.left.parent = substitution
             removed_v.left = None
-        substitution.len_left_subtree = removed_v.len_left_subtree
-        substitution.len_right_subtree = removed_v.len_right_subtree
