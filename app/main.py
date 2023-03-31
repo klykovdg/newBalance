@@ -1,5 +1,4 @@
 from app.binary_tree.BinaryTree import BinaryTree
-from app.tools.pgprint import pgprint
 from app.tools.rendering import render
 from app.tools.guiprint import guiprint
 
@@ -12,4 +11,4 @@ if __name__ == '__main__':
         bt.add(k[i], v[i])
     print(bt.get(4))
     render(bt)
-    # method(bt)
+    # guiprint(bt)

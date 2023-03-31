@@ -13,7 +13,8 @@ _pole = str('\u2502')     # │
 
 
 def pgprint(bt: BinaryTree):
-    global _root
+    global _root, _result
+    _result = []
     _root = bt.root
     if _root:
         _find_lowest_and_print(_root)
