@@ -5,8 +5,10 @@ from app.tools.guiprint import guiprint
 
 if __name__ == '__main__':
     bt = BinaryTree()
-    k = [10, 4, 12, 2, 5, 11, 1, 3, 7]
-    v = ['ten', 'four my favorite number!', 'two', 'five', 'eleven', 'sixteen', 'one', 'three', 'seven']
+    k = [123, 11, 200, 1, 100, 150, 2000]
+    v = [''] * len(k)
+    # k = [10, 4, 12, 2, 5, 11, 1, 3, 7]
+    # v = ['ten', 'four my favorite number!', 'two', 'five', 'eleven', 'sixteen', 'one', 'three', 'seven']
     for i in range(len(k)):
         bt.add(k[i], v[i])
     print(bt.get(4))
