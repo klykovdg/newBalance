@@ -3,12 +3,13 @@ from app.binary_tree.Node import Node
 from tkinter import *
 
 # TODO check bt is None or empty
+# TODO compute VARS according to the key size
 _X1_START = 25
-_X_NODE_SIZE = 70
-_X_OFFSET = 5
+_X_NODE_SIZE = 50  # x2 - x1
+_X_OFFSET = 25     # space between two nodes in X
 _Y1_START = 50
-_Y_NODE_SIZE = 70  # y2 - y1 may be rename in Y_NODE_SIZE
-_LINE = 70
+_Y_NODE_SIZE = 50  # y2 - y1
+_LINE = 50         # # space between two nodes in Y
 
 
 def guiprint(bt: BinaryTree, parent=None):

@@ -13,21 +13,21 @@ class BinaryTree:
         self._key_is_not_found = True
 
     def add(self, key, value):
-        if key:
+        if key is not None:
             if self.root:
                 self._compare_and_add(self.root, key, value)
             else:
                 self.root = Node(key, value)
 
     def get(self, key):
-        if key:
+        if key is not None:
             self._val_searched = None
             self._get_val(key, self.root)
             return self._val_searched
         return None
 
     def remove(self, key):
-        if key:
+        if key is not None:
             self._val_removed = None
             self._remove_node(key, self.root)
             self._key_is_not_found = True
