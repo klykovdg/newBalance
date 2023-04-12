@@ -16,6 +16,9 @@ class TreeString:
         self._tree = tree
         self._arr = []
 
+    def some(self):
+        pass
+
     def get(self):
         if self._tree.root:
             self._arr = []
